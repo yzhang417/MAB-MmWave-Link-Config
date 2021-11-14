@@ -1,15 +1,15 @@
 class def_policy_setting:
     def __init__(self):
         self.enable_bandit = False;
-        self.enable_TS = True;
+        self.enable_TS = False;
         self.enable_random = False;
         self.enable_correlation = False;
         self.enable_monte_carlo = False;
         self.policy_id = -1;
         self.legend = 'Default';
         self.color = 'r';
-        self.default_bw_id = -1;
-        self.default_tslot_id = -1;
+        self.default_bw_id = 4;
+        self.default_tslot_id = 1;
         self.default_beam_id = -1;
         self.ratio_codebook_used = 1;
         return
@@ -55,19 +55,24 @@ def get_MAB_policy_setting(exid,env_parameter):
         # Random policy
         policy_setting = def_policy_setting();
         policy_setting.enable_random = True;
+        policy_setting.enable_bandit = False;
+        policy_setting.enable_TS = False;
         policy_setting.policy_id = env_parameter.K_tslot;
         policy_setting.legend = 'Random selection policy';
         policy_setting.color = 'C0';
         policy_setting_list.append(policy_setting);
         # Bandit policy
         policy_setting = def_policy_setting();
+        policy_setting.enable_random = False;
         policy_setting.enable_bandit = True;
+        policy_setting.enable_TS = True;
         policy_setting.policy_id = env_parameter.K_tslot+1;
         policy_setting.legend = 'Bandit (TS) policy';
         policy_setting.color = 'C2';
         policy_setting_list.append(policy_setting);
         # Bandit policy
         policy_setting = def_policy_setting();
+        policy_setting.enable_random = False;
         policy_setting.enable_bandit = True;
         policy_setting.enable_TS = False;
         policy_setting.policy_id = env_parameter.K_tslot+2;

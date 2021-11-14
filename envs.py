@@ -32,7 +32,7 @@ def env_init(ratio_codebook_used=1):
     # Network topology
     # -------------------------------------    
     N_UE = 5; # Number of users 
-    radius = np.array([20, 10, 20, 30, 40]);  # Distance between Tx and Rx
+    radius = np.array([30, 10, 20, 30, 40]);  # Distance between Tx and Rx
     angle =  np.array([45, 0, 0, 0, 0]);    # Angle between Tx and Rx
     target_prob_blockage_to_AP = np.array([0.05, 0.05, 0.05, 0.05, 0.05]); # Average percentage of slots in blockage
     target_prob_blockage_D2D = 0.05
@@ -47,7 +47,7 @@ def env_init(ratio_codebook_used=1):
     # Beam training setting (realignment periodicity)
     # -----------------------------------------------
     t_slot_vec = np.array([10,20,40,80,160])*1e-3;       # Time duration for a single slot in seconds
-    t_SSW = 10 * 1e-6;        # Time of SSW frame in seconds (time duration for per measurement)
+    t_SSW = 15 * 1e-6;        # Time of SSW frame in seconds (time duration for per measurement)
     Num_arr_AP = 4;           # Number of antenna arrays equipped to cover 360 degrees
     Num_arr_UE = 4;           # Number of antenna arrays equipped to cover 360 degrees
     Beampair_Repetition = 1;  # Repetion of each beam pair sounding
@@ -60,13 +60,13 @@ def env_init(ratio_codebook_used=1):
     # -------------------------------------
     max_activity_range = 10; # maximum distance in meters from the initial position
     v_min = [5,0,0,0,0,0];  # minimum speed in m/s
-    v_max = [15,0,0,0,0,0]; # maximum speed in m/s
+    v_max = [10,0,0,0,0,0]; # maximum speed in m/s
     last_direction = np.ones(N_UE+1)*np.deg2rad(angle[0]-90) # last index is for the mobility of AP
     last_velocity = np.ones(N_UE+1)*(v_min[0]+v_max[0])/2 # last index is for the mobility of AP
     v_self_rotate_min = 0  # minimum ratation speed in degrees/s
     v_self_rotate_max = 10  # maximum ratation speed in degrees/s
-    max_number_last_rotate = 10
-    max_number_last_direction = 10
+    max_number_last_rotate = 20
+    max_number_last_direction = 20
     number_last_rotate = np.ones(N_UE+1) * max_number_last_rotate # last index is for the mobility of AP
     number_last_direction = np.ones(N_UE+1) * max_number_last_direction  # last index is for the mobility of AP
 
@@ -200,11 +200,26 @@ def env_init(ratio_codebook_used=1):
     env_parameter.Ycoor_init = Ycoor_init;
     env_parameter.Xcoor_list = [list() for _ in range(len(Xcoor_init))]
     env_parameter.Ycoor_list = [list() for _ in range(len(Xcoor_init))]
+    
+    random_radius = np.random.uniform(low=0, high=max_activity_range-5,size=1)
+    random_angle = np.random.uniform(low=-np.pi, high=np.pi,size=1)
+    randX_diff, randY_diff = pol2cart(random_angle,random_radius);
+    Xcoor_init_random = Xcoor_init + randX_diff
+    Ycoor_init_random = Ycoor_init + randY_diff
+    env_parameter.Xcoor_init_random = Xcoor_init_random;
+    env_parameter.Ycoor_init_random = Ycoor_init_random;
+#     for u in range(len(Xcoor_init)):
+#         env_parameter.Xcoor_list[u].append(Xcoor_init[u]);
+#         env_parameter.Ycoor_list[u].append(Ycoor_init[u]);
+#     env_parameter.Xcoor = Xcoor_init;
+#     env_parameter.Ycoor = Ycoor_init;
+    
     for u in range(len(Xcoor_init)):
-        env_parameter.Xcoor_list[u].append(Xcoor_init[u]);
-        env_parameter.Ycoor_list[u].append(Ycoor_init[u]);
-    env_parameter.Xcoor = Xcoor_init;
-    env_parameter.Ycoor = Ycoor_init;
+        env_parameter.Xcoor_list[u].append(Xcoor_init_random);
+        env_parameter.Ycoor_list[u].append(Ycoor_init_random);
+    env_parameter.Xcoor = Xcoor_init_random;
+    env_parameter.Ycoor = Ycoor_init_random;
+    
     # Velocity
     env_parameter.max_activity_range = max_activity_range
     env_parameter.v_min = v_min
@@ -355,13 +370,13 @@ class envs():
         t_slot = self.env_parameter.t_slot_vec[action.tslot_id]
         # Compute new position
         if self.ct == 0:
-            self.env_parameter.Xcoor = self.env_parameter.Xcoor_init;
-            self.env_parameter.Ycoor = self.env_parameter.Ycoor_init;
+            self.env_parameter.Xcoor = self.env_parameter.Xcoor_init_random;
+            self.env_parameter.Ycoor = self.env_parameter.Ycoor_init_random;
             self.env_parameter.Xcoor_list = [list() for _ in range(self.env_parameter.N_UE+1)]
             self.env_parameter.Ycoor_list = [list() for _ in range(self.env_parameter.N_UE+1)]
             for u in range(self.env_parameter.N_UE+1):
-                self.env_parameter.Xcoor_list[u].append(self.env_parameter.Xcoor_init[u]);
-                self.env_parameter.Ycoor_list[u].append(self.env_parameter.Ycoor_init[u]);
+                self.env_parameter.Xcoor_list[u].append(self.env_parameter.Xcoor[u]);
+                self.env_parameter.Ycoor_list[u].append(self.env_parameter.Ycoor[u]);
             #self.env_parameter.number_last_direction = np.zeros(self.env_parameter.N_UE+1)   
             self.env_parameter.direction_new = self.env_parameter.last_direction
             self.env_parameter.velocity_new = self.env_parameter.last_velocity

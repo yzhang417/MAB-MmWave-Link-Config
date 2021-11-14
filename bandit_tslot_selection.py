@@ -76,7 +76,8 @@ def update_bandit_tslot_para_MTS(env_parameter, state, action, reward, MCS_level
     Leadert = np.argmax(Mean_tslot); # Decide leader at index t
     CountLeader_tslot[Leadert] += 1
     UWMTS_Dir_par_tslot[It,mt] = UWMTS_Dir_par_tslot[It,mt] + 1;
-    RateTmp = RateNor[mt]*Coeff_Eff;
+    #RateTmp = RateNor[mt]*Coeff_Eff;
+    RateTmp = reward/env_parameter.maxRateValue;
     if np.isinf(Mean_tslot[It]):
         Mean_tslot[It] = RateTmp;
     else:
@@ -95,15 +96,12 @@ def update_bandit_tslot_para_MTS(env_parameter, state, action, reward, MCS_level
 def bandit_tslot_selection_KL_UCB(state, env_parameter):    
     Mean_tslot = state.Mean_tslot
     NumUse_tslot = state.NumUse_tslot
-    UCB_Index_tslot = state.UCB_Index_tslot    
+    UCB_Index_tslot = state.UCB_Index_tslot        
     if np.isinf(np.amax(UCB_Index_tslot)): # Each arm is used at least once
         posInf = np.where(UCB_Index_tslot == np.inf)[0]
         It = posInf[np.random.randint(len(posInf))]
-    elif np.amin(NumUse_tslot) < env_parameter.min_use_per_tslot_guaranteed:
-        It = np.argmin(NumUse_tslot)
     else:
         It = np.argmax(UCB_Index_tslot) # Decide the tslot to play It
-    tslot_id = It;
     return It
 
 
@@ -115,23 +113,13 @@ def update_bandit_tslot_para_KL_UCB(env_parameter, state, action, reward, MCS_le
     Mean_tslot = state.Mean_tslot;
     NumUse_tslot = state.NumUse_tslot;
     UCB_Index_tslot = state.UCB_Index_tslot;
-    Mean_bw_tslot_MCTS = state.Mean_bw_tslot_MCTS;
-    NumUse_bw_tslot_MCTS = state.NumUse_bw_tslot_MCTS;
-    UCB_Index_bw_tslot_MCTS = state.UCB_Index_bw_tslot_MCTS;
-    N_SSW_BS_vec = env_parameter.N_SSW_BS_vec;
-    ratio_codebook_used = env_parameter.ratio_codebook_used;
-    sub_N_SSW_BS_vec = N_SSW_BS_vec * ratio_codebook_used;
         
     # Reward: data rate
     RateTmp = reward/env_parameter.maxRateValue
-    new_reward = reward;
     tslot_id = action.tslot_id
     bw_id = action.bw_id
             
     # Update first layer bandit parameters: Mean_tslot, NumUse_tslot and UCB_Index_tslot
-    t = ct+1+0.0001;
-    ft_KLUCB = 2*np.log(t) + 3*np.log(np.log(t));
-    ft_UCB = t**(2*UCB_Constant);
     # Update mean
     if np.isinf(Mean_tslot[tslot_id]):
         Mean_tslot[tslot_id] = RateTmp;
@@ -140,6 +128,10 @@ def update_bandit_tslot_para_KL_UCB(env_parameter, state, action, reward, MCS_le
     # Update num use
     NumUse_tslot[tslot_id] = NumUse_tslot[tslot_id]+1;     
     # Update UCB index
+    t = ct+1;
+    KLUCB_Constant = 0;
+    ft_KLUCB = 2*np.log(t) + KLUCB_Constant*np.log(np.log(t));
+    ft_UCB = t**(2*UCB_Constant);
     UCB1_first_layer = False
     if UCB1_first_layer:
         UCB_Index_tslot[tslot_id] = Mean_tslot[tslot_id] + sqrt(log(ft_UCB)/NumUse_tslot[tslot_id]);
