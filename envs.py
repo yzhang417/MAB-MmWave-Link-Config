@@ -31,11 +31,11 @@ def env_init(ratio_codebook_used=1):
     # -------------------------------------
     # Network topology
     # -------------------------------------    
-    N_UE = 5; # Number of users 
+    N_UE = 5; # Number of users, only first user is used in simulation
     radius = np.array([30, 10, 20, 30, 40]);  # Distance between Tx and Rx
     angle =  np.array([45, 0, 0, 0, 0]);    # Angle between Tx and Rx
     target_prob_blockage_to_AP = np.array([0.05, 0.05, 0.05, 0.05, 0.05]); # Average percentage of slots in blockage
-    target_prob_blockage_D2D = 0.05
+    target_prob_blockage_D2D = 0.05;
     target_prob_blockage = np.ones((N_UE,N_UE)) - np.diag(np.ones(N_UE))
     target_prob_blockage = target_prob_blockage * target_prob_blockage_D2D + np.diag(target_prob_blockage_to_AP)
     Xcoor_init, Ycoor_init = pol2cart(np.deg2rad(angle),radius);
@@ -475,7 +475,8 @@ class envs():
             is_in_blockage = np.zeros_like(self.remain_slots_in_blockage)
             self.remain_slots_in_blockage.clip(max=1,out=is_in_blockage)     
             self.is_in_blockage = is_in_blockage
-            blockage_loss_dB = is_in_blockage * self.env_parameter.blockage_loss_dB
+            ##blockage_loss_dB = is_in_blockage * self.env_parameter.blockage_loss_dB
+            blockage_loss_dB = is_in_blockage * np.random.uniform(low=10,high=30,size=1);
             Pathloss = 28.0 + 22*np.log10(dist_D2D) + 20*np.log10(self.env_parameter.fc) + blockage_loss_dB; 
             self.env_parameter.Pathloss = Pathloss
             self.num_slots_to_last_blockage_starts = self.num_slots_to_last_blockage_starts * \
