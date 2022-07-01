@@ -26,7 +26,7 @@ class def_state():
         self.UCB_Index_bw = np.zeros((K_bw,1));
         self.UCB_Index_bw[:] = math.inf
         
-        # Example: 2. Beam training periodicity selection (UWMTS)
+        # Example: 2. Beam training periodicity selection (UWMTS) Scenario I in paper
         self.UWMTS_Dir_par_tslot = np.ones((K_tslot,M+1));
         self.CountLeader_tslot = np.zeros((K_tslot,1));
         self.NumUse_tslot = np.zeros((K_tslot,1));
@@ -35,7 +35,7 @@ class def_state():
         self.UCB_Index_tslot = np.zeros((K_tslot,1));
         self.UCB_Index_tslot[:] = math.inf
         
-        # Example: 3. Joint Beamwidth and Beam training periodicity selection (KLUCB)
+        # Example: 3. Joint beamwidth and beam training periodicity selection (KLUCB) Scenario 2 in paper
         self.GMTS_Dir_par_bw_tslot = np.ones((K_tslot*K_bw,M+1));  
         self.CountLeader_bw_tslot = np.zeros((K_tslot*K_bw,1));
         self.NumUse_bw_tslot = np.zeros((K_tslot*K_bw,1));
@@ -59,9 +59,9 @@ class def_state():
         self.UCB_Index_beam = np.zeros((K_bw,K_beam_max));
         for i in range(K_bw):
             self.UCB_Index_beam[i,:int(env_parameter.N_SSW_BS_vec[i])] = math.inf;
-        self.new_reward = 100e9
+        self.new_reward = 100e9 # Used for example 4
         
-        # Example: 5. Joint Beamwidth, t_slot and beam direction selection (UCB+KLUCB+Correlation)       
+        # Example: 5. Joint Beamwidth, t_slot and beam direction selection (UCB+KLUCB+Correlation) Scenario 3 in paper
         self.NumUse_beam_3layers = np.zeros((K_tslot,K_bw,K_beam_max));
         self.Mean_beam_3layers = np.zeros((K_tslot,K_bw,K_beam_max));
         self.Mean_beam_3layers[:] = -1;        

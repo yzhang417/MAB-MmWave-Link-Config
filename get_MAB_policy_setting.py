@@ -42,7 +42,7 @@ def get_MAB_policy_setting(exid,env_parameter):
         policy_setting.color = 'C3';
         policy_setting_list.append(policy_setting);
         
-    # Beam sweeping periodicity selection (K_tslot + 2 polices)
+    # Beam sweeping period selection (K_tslot + 2 polices)
     elif exid == 2:
         # All fixed policy
         for i in range(env_parameter.K_tslot):
@@ -121,8 +121,8 @@ def get_MAB_policy_setting(exid,env_parameter):
         policy_setting_list.append(policy_setting);
         policy_id_count = policy_id_count + 1;
         
-    # Joint Beamwidth and beam direction selection (6 policies)
-    else:
+    # Joint beamwidth, beam training peeriod and beam direction selection (6 policies)
+    else: # exid == 5
         # All beams with random codebook policy
         policy_setting = def_policy_setting();
         policy_setting.enable_random = True;
@@ -131,7 +131,7 @@ def get_MAB_policy_setting(exid,env_parameter):
         policy_setting.legend = 'Random selection over beamwidth and beam sweeping periodicity with all beams';
         policy_setting.color = 'C0';
         policy_setting_list.append(policy_setting);
-        # Bandit policy without correlation
+        # Bandit policy with R = 1/4
         policy_setting = def_policy_setting();
         policy_setting.enable_bandit = True;
         policy_setting.ratio_codebook_used = 1/1;
@@ -139,7 +139,7 @@ def get_MAB_policy_setting(exid,env_parameter):
         policy_setting.legend = 'Bandit (KL-UCB) based Monte-Carlo policy with all beams';
         policy_setting.color = 'C1';
         policy_setting_list.append(policy_setting);
-        # Bandit policy without correlation
+        # Bandit policy with R = 1/2
         policy_setting = def_policy_setting();
         policy_setting.enable_bandit = True;
         policy_setting.ratio_codebook_used = 1/2;
@@ -147,7 +147,7 @@ def get_MAB_policy_setting(exid,env_parameter):
         policy_setting.legend = 'Bandit (KL-UCB) based Monte-Carlo policy selecting 1/2 of all beams';
         policy_setting.color = 'C2';
         policy_setting_list.append(policy_setting);
-        # Bandit policy with correlation
+        # Bandit policy with R = 1/4
         policy_setting = def_policy_setting();
         policy_setting.enable_bandit = True;
         policy_setting.ratio_codebook_used = 1/4;

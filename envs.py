@@ -200,7 +200,7 @@ def env_init(ratio_codebook_used=1):
     env_parameter.Ycoor_init = Ycoor_init;
     env_parameter.Xcoor_list = [list() for _ in range(len(Xcoor_init))]
     env_parameter.Ycoor_list = [list() for _ in range(len(Xcoor_init))]
-    
+    # Using a random initial position of user
     random_radius = np.random.uniform(low=0, high=max_activity_range-5,size=1)
     random_angle = np.random.uniform(low=-np.pi, high=np.pi,size=1)
     randX_diff, randY_diff = pol2cart(random_angle,random_radius);
@@ -208,18 +208,19 @@ def env_init(ratio_codebook_used=1):
     Ycoor_init_random = Ycoor_init + randY_diff
     env_parameter.Xcoor_init_random = Xcoor_init_random;
     env_parameter.Ycoor_init_random = Ycoor_init_random;
-#     for u in range(len(Xcoor_init)):
-#         env_parameter.Xcoor_list[u].append(Xcoor_init[u]);
-#         env_parameter.Ycoor_list[u].append(Ycoor_init[u]);
-#     env_parameter.Xcoor = Xcoor_init;
-#     env_parameter.Ycoor = Ycoor_init;
-    
     for u in range(len(Xcoor_init)):
         env_parameter.Xcoor_list[u].append(Xcoor_init_random);
         env_parameter.Ycoor_list[u].append(Ycoor_init_random);
     env_parameter.Xcoor = Xcoor_init_random;
     env_parameter.Ycoor = Ycoor_init_random;
-    
+    # Using fixed initial position of user
+    #-------------------------------------------------------------------------------------------
+    #     for u in range(len(Xcoor_init)):
+    #         env_parameter.Xcoor_list[u].append(Xcoor_init[u]);
+    #         env_parameter.Ycoor_list[u].append(Ycoor_init[u]);
+    #     env_parameter.Xcoor = Xcoor_init;
+    #     env_parameter.Ycoor = Ycoor_init;
+    #-------------------------------------------------------------------------------------------
     # Velocity
     env_parameter.max_activity_range = max_activity_range
     env_parameter.v_min = v_min
